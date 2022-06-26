@@ -5,7 +5,7 @@
 #### b: beta distribution to simulate individual-level VE
 #### Parallel processing version
 #### Skip all CIs (to reduce computational requirements)
-#### CloudVersion: more combos, parquet brotli compression, no directories (input-output in same folder)
+#### CloudVersion: larger N, more combos, parquet brotli compression, no directories (input-output in same folder)
 
 import gc
 import pandas as pd
@@ -14,20 +14,10 @@ from datetime import date, timedelta
 import itertools
 import time
 import telegram_send
-import dataframe_image as dfi
-import shutil
 from tqdm import tqdm
 
 import statsmodels.formula.api as smf
 
-import plotly.graph_objects as go
-
-from svglib.svglib import svg2rlg
-from reportlab.pdfgen import canvas
-from reportlab.graphics import renderPDF
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 import multiprocess as mp
 
@@ -53,27 +43,16 @@ telegram_send.send(conf='EcMetrics_Config_GeneralFlow.conf',
 ### 0 --- Parameters
 np.random.seed(179012)
 
-# list_N = [1000] # how many people (keep fixed)
-# list_T = [20, 40, 60] # how many days
-# list_Theta_v = [0.3, 0.5, 0.7] # vaxers share (keep fixed)
-# list_p_v = [0.15, 0.3, 0.5, 0.85, 1] # probability of getting vaccinated on day x
-# list_Theta_tau = [0.5, 0.75, 1] # testers share
-# list_p_tau = [0.5, 0.75, 1] # testing probability if theta_tau = 1
-# list_ktau = [0.5, 0.75, 1, 1.25, 1.5] # relative propensity to test between v = 1 and v = 0 (captures selection in testing)
-# list_alpha_b = [0.025] # baseline daily infection risk (keep fixed)
-# list_kalpha = [0.5, 0.75, 1, 1.25, 1.5] # asymmetry in baseline infection risk between vax-willing and vax-unwilling
-# list_mew_ve = [0.5, 0.7, 0.9] # peak of VE distribution (beta distribution) (if 0.5, then mode = mean)
-
 list_N = [1000] # how many people (keep fixed)
-list_T = [20, 40, 60] # how many days
-list_Theta_v = [0.3, 0.5, 0.7] # vaxers share (keep fixed)
-list_p_v = [0.3] # probability of getting vaccinated on day x
-list_Theta_tau = [0.5] # testers share
-list_p_tau = [0.5] # testing probability if theta_tau = 1
-list_ktau = [0.5, 1, 1.5] # relative propensity to test between v = 1 and v = 0 (captures selection in testing)
+list_T = [20, 30, 40, 50, 60] # how many days
+list_Theta_v = [0.3, 0.4, 0.5, 0.6, 0.7] # vaxers share (keep fixed)
+list_p_v = [0.15, 0.3, 0.4, 0.5, 0.6, 0.85, 1] # probability of getting vaccinated on day x
+list_Theta_tau = [0.5, 0.65, 0.75, 0.85, 1] # testers share
+list_p_tau = [0.5, 0.65, 0.75, 0.85, 1] # testing probability if theta_tau = 1
+list_ktau = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5] # relative propensity to test between v = 1 and v = 0 (captures selection in testing)
 list_alpha_b = [0.025] # baseline daily infection risk (keep fixed)
-list_kalpha = [0.5, 1, 1.5] # asymmetry in baseline infection risk between vax-willing and vax-unwilling
-list_mew_ve = [0.5, 0.9] # peak of VE distribution (if 0.5, then mode = mean) (keep fixed)
+list_kalpha = [0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5]  # asymmetry in baseline infection risk between vax-willing and vax-unwilling
+list_mew_ve = [0.5, 0.6, 0.7, 0.8, 0.9] # peak of VE distribution (beta distribution) (if 0.5, then mode = mean)
 
 paramslist = list(itertools.product(list_N, list_T, list_Theta_v, list_p_v, list_Theta_tau, list_p_tau, list_ktau, list_alpha_b, list_kalpha, list_mew_ve))
 ## Pandas global settings
@@ -828,7 +807,7 @@ def snsdcomeback(params):
 
 ### II --- Simulate data set + study designs
 __file__ = 'workaround.py'
-pool = mp.Pool(7) # no arguments = fastest relative to nested loops in MWE
+pool = mp.Pool() # no arguments = fastest relative to nested loops in MWE
 output = pool.map(snsdcomeback,paramslist)
 VE_consol_all = pd.concat(output)
 telegram_send.send(conf='EcMetrics_Config_GeneralFlow.conf',
