@@ -18,7 +18,6 @@ from tqdm import tqdm
 
 import statsmodels.formula.api as smf
 
-
 import multiprocess as mp
 
 time_start = time.time()
