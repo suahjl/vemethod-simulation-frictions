@@ -1,4 +1,5 @@
 #### Generate heatmap of design biases with only 'perfect parameter assumptions'
+#### Separate heatmap for every T
 
 import gc
 import pandas as pd
@@ -59,8 +60,6 @@ for i in param_latex_ideal: df = df[df[i] == 1]
 for i in param_latex_variable: df[i] = df[i].astype('str').replace('\.0', '', regex=True)
 ## Trim columns
 df = df[['Design', 'Bias'] + param_latex_variable]
-## Pivot
-df_wide = df.pivot(index=param_latex_variable, columns='Design', values='Bias') # only central measure, no CIs
 
 ### II --- Functions
 def telsendimg(path='', cap=''):
@@ -88,11 +87,14 @@ def heatmap(input=pd.DataFrame(), mask=None, colourmap='vlag', outputfile='', ti
     return fig
 
 ### III --- Heatmap
-fig = heatmap(input=df_wide,
-              outputfile='VEMethod_Sim1b_PureDesignBias_Heatmap.png',
-              title="Simulated bias in VE estimates across study designs\n under 'perfect' parameter assumptions\n (T, \u03BC(VE), \u0398(v) on vertical axis)")
-telsendimg(path_method + 'VEMethod_Sim1b_PureDesignBias_Heatmap.png',
-           cap="Simulated bias in VE estimates across study designs\n under 'perfect' parameter assumptions\n (T, \u03BC(VE), \u0398(v) on vertical axis)")
+for T in tqdm(['20', '30', '40', '50', '60']): # object dtype
+    d = df[df['T'] == T]
+    df_wide = d.pivot(index=param_latex_variable, columns='Design', values='Bias') # only central measure, no CIs
+    fig = heatmap(input=df_wide,
+                  outputfile='VEMethod_Sim1b_PureDesignBias_Heatmap' + str(T) + '.png',
+                  title="Simulated bias in VE estimates across study designs\n under 'perfect' parameter assumptions\n (T = " + str(T) + "; \u03BC(VE), \u0398(v) on vertical axis)")
+    telsendimg(path_method + 'VEMethod_Sim1b_PureDesignBias_Heatmap' + str(T) + '.png',
+               cap="Simulated bias in VE estimates across study designs\n under 'perfect' parameter assumptions\n (T = " + str(T) + "; \u03BC(VE), \u0398(v) on vertical axis)")
 
 ### End
 print('\n----- Ran in ' + "{:.0f}".format(time.time() - time_start) + ' seconds -----')
