@@ -13,4 +13,4 @@ This research uses only simulated data, hence does not require IRB review.
 2. Run step 0 as-is. This script simulates data using the theoretical model in the paper using all parameter combinations detailed.
 3. Run step 1 as-is. This script re-runs select simulations whose legal parameter combinations returned singular matrix errors using a different seed, and merges both data frames.
 4. Run step 2 after changing the directory line (path_method = 'xx') to your own desired output directory, the output from step 1 should be in the same directory.
-Note: You may consider running the simulation using different seeds.
+\*Note: You may consider running the simulation using different seeds.
