@@ -1,7 +1,7 @@
-#### Comparing VE methodologies
-#### Time-varying vaccine coverage
-#### 'Leaky' vaccines, heterogeneous VE, heterogeneous testing and vax preferences
-#### Drivers1b: Use simulated biases from Sim1b (designs M and parameters Xi) to estimate relative importance of Xi by M
+# Comparing VE methodologies
+# Time-varying vaccine coverage
+# 'Leaky' vaccines, heterogeneous VE, heterogeneous testing and vax preferences
+# Drivers1b: Use simulated biases from Sim1b (designs M and parameters Xi) to estimate relative importance of Xi by M
 
 import gc
 import pandas as pd
@@ -9,7 +9,7 @@ import numpy as np
 from datetime import date, timedelta
 import itertools
 import time
-import telegram_send
+# import telegram_send
 import dataframe_image as dfi
 import shutil
 from tqdm import tqdm
@@ -22,50 +22,52 @@ import seaborn as sns
 
 time_start = time.time()
 
-### 0 --- Preliminaries
-## Path
-path_method = 'D:/Users/ECSUAH/Desktop/Quant/HealthEconomy/VaccinesAssessment/VEMethod/' # check this
-## File name
-file_sim = 'VEMethod_Sim1b_Parallel_CloudVersion_NoCI_FIN.parquet' # take the raw version (all latex)
-## Data frame
+# 0 --- Preliminaries
+# Path
+path_method = 'Output/' # check this
+# File name
+file_sim = 'VEMethod_Sim1b_Parallel_CloudVersion_NoCI_FIN.parquet'  # take the raw version (all latex)
+# Data frame
 df = pd.read_parquet(path_method + file_sim)
-n_row = len(df.index) # number of simulations done
+n_row = len(df.index)  # number of simulations done
 
-### 0 --- Setup
-## max and min of estimated bias
+# 0 --- Setup
+# max and min of estimated bias
 bias_lb = -60
 bias_ub = 60
-## For design dummies
+# For design dummies
 nM = df['Design'].nunique()
-## Parameters
+# Parameters
 param_latex = ['N', 'T', 'Theta_v', 'p_v', 'Theta_tau', 'p_tau', 'ktau', 'alpha_b', 'kalpha', 'mew_ve']
 param_greek = ['N', 'T', '\u0398(v)', 'p(v)', '\u0398(\u03C4)', 'p(\u03C4)', 'k(\u03C4)', '\u03B1(b)', 'k(\u03B1)', '\u03BC(VE)']
 dict_param = dict(zip(param_latex, param_greek))
-list_Xi = ['T', 'Theta_v', 'p_v', 'Theta_tau', 'p_tau', 'ktau', 'kalpha', 'mew_ve'] # excludes N, and alpha_b since these are static
+list_Xi = ['T', 'Theta_v', 'p_v', 'Theta_tau', 'p_tau', 'ktau', 'kalpha', 'mew_ve']  # excludes N, and alpha_b since these are static
 list_Bias_Xi = ['Bias'] + list_Xi
 list_M = list(df['Design'].unique())
 # list_Mnum = list(range(0, len(list_M)))
 # dict_M = dict(zip(list_M, list_Mnum))
 
-### 0 --- Additional cleaning
-## Range of bias considered
+# 0 --- Additional cleaning
+# Range of bias considered
 cond_bias = ((df['Bias'] >= bias_lb) & (df['Bias'] <= bias_ub))
 df = df[cond_bias]
-df_wide = df.pivot(index=param_latex, columns='Design', values='Bias') # calculate number of simulations kept with 'usable' bias
+df_wide = df.pivot(index=param_latex, columns='Design', values='Bias')  # calculate number of simulations kept with 'usable' bias
 n_sim = len(df_wide.index)
-## Redefine ktau and kalpha as absolute deviation from 1
-df['ktau'] = np.abs(df['ktau'] - 1) # ktau
-df['kalpha'] = np.abs(df['kalpha'] - 1) # kalpha
-## Redefine p_v and p_tau as shortfall from 1 (deviation from static coverage and perfect test-willing testing)
+# Redefine ktau and kalpha as absolute deviation from 1
+df['ktau'] = np.abs(df['ktau'] - 1)  # ktau
+df['kalpha'] = np.abs(df['kalpha'] - 1)  # kalpha
+# Redefine p_v and p_tau as shortfall from 1 (deviation from static coverage and perfect test-willing testing)
 df['p_v'] = np.abs(df['p_v'] - 1)
-df['p_tau'] = np.abs(df['p_tau'] - 1) # p_tau
-## Redefine Theta_tau and Theta_v as shortall from 1 (deviation from full test-willing population and vax-willing population)
-df['Theta_tau'] = np.abs(df['Theta_tau'] - 1) # Theta_tau
+df['p_tau'] = np.abs(df['p_tau'] - 1)  # p_tau
+# Redefine Theta_tau and Theta_v as shortall from 1 (deviation from full test-willing population and vax-willing population)
+df['Theta_tau'] = np.abs(df['Theta_tau'] - 1)  # Theta_tau
 df['Theta_v'] = np.abs(df['Theta_v'] - 1) # Theta_v
-## Redefine mew_ve as shortfall from 1 (deviation from perfect vaccine)
-df['mew_ve'] = np.abs(df['mew_ve'] - 1) # mew_ve
+# Redefine mew_ve as shortfall from 1 (deviation from perfect vaccine)
+df['mew_ve'] = np.abs(df['mew_ve'] - 1)  # mew_ve
 
-### 0 --- Define functions
+# 0 --- Define functions
+
+
 def OLS(formula, data=df, method='pinv', cov='HC3', dropM=True):
     mod = smf.ols(formula=formula, data=data)
     result = mod.fit(method=method, cov_type=cov)
@@ -77,6 +79,7 @@ def OLS(formula, data=df, method='pinv', cov='HC3', dropM=True):
     est = est.reset_index()
     est.columns = ['Parameters', 'Point Estimate', 'Lower Bound', 'Upper Bound']
     return mod, result, est
+
 
 def FE(formula, data=df, index=[''], dropM=True):
     d = df.set_index(index) # sets the entity
@@ -91,15 +94,6 @@ def FE(formula, data=df, index=[''], dropM=True):
     est.columns = ['Parameters', 'Point Estimate', 'Lower Bound', 'Upper Bound']
     return mod, result, est
 
-def telsendimg(path='', cap=''):
-    with open(path, 'rb') as f:
-        telegram_send.send(conf='EcMetrics_Config_GeneralFlow.conf',
-                           images=[f],
-                           captions=[cap])
-
-def telsendmsg(msg=''):
-    telegram_send.send(conf='EcMetrics_Config_GeneralFlow.conf',
-                       messages=[msg])
 
 def heatmap(input=pd.DataFrame(),
             mask=None,
@@ -129,33 +123,29 @@ def heatmap(input=pd.DataFrame(),
     fig.savefig(path_method + outputfile)
     return fig
 
-### I --- Regression setup
-## Number of sims kept
-telsendmsg(msg='VEMethod_Drivers1b' + '\n\n' +
-               'Number of "valid" simulations: ' + str(n_sim) + '\n' +
-               'Bias = [' + str(bias_lb) + ', ' + str(bias_ub) + ']') # number of simulations with 'usable' bias
-## Equations
+# I --- Regression setup
+# Number of sims kept
+print('VEMethod_Drivers1b' + '\n\n' +
+      'Number of "valid" simulations: ' + str(n_sim) + '\n' +
+      'Bias = [' + str(bias_lb) + ', ' + str(bias_ub) + ']')  # number of simulations with 'usable' bias
+# Equations
 M = 'C(Design)'
 Xi = '+'.join(list_Xi)
 eqn_li='Bias ~ + ' + M + ' + ' + Xi
 eqn_li_Mspec='Bias ~ ' + Xi
 
-### II.A --- Estimating OLS regression + Heatmaps
+# II.A --- Estimating OLS regression + Heatmaps
 print('II.A --- Estimating OLS regression + Heatmaps')
-## Linear
+# Linear
 mod, result, est = OLS(formula=eqn_li)
 est = est.round(3)
 est['Parameters'] = est['Parameters'].replace(dict_param)
 est = est.set_index('Parameters')
 # dfi.export(est, path_method + 'VEMethod_Drivers1b_FEest_Li.png')
-# telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Li.png',
-#            cap='VEMethod_Drivers1b_FEest_Li')
 fig = heatmap(input=est,
               outputfile='VEMethod_Drivers1b_FEest_Li_Heatmap.png',
               title='Yes')
-telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Li_Heatmap.png',
-           cap='VEMethod_Drivers1b_FEest_Li_Heatmap\n\n' + 'Rows = ' + str(n_row))
-## M-specific
+# M-specific
 est_consol = pd.DataFrame(columns=['Design', 'Parameters', 'Point Estimate', 'Lower Bound', 'Upper Bound'])
 R = 1
 for M in tqdm(list_M):
@@ -164,17 +154,15 @@ for M in tqdm(list_M):
     est = est.round(3)
     est['Parameters'] = est['Parameters'].replace(dict_param)
     est['Design'] = M
-    est_consol = pd.concat([est_consol, est], axis=0) # consolidate DFs before setting index in M-spec DF
-    del est['Design'] # don't need this for the M-spec heatmap
+    est_consol = pd.concat([est_consol, est], axis=0)  # consolidate DFs before setting index in M-spec DF
+    del est['Design']  # don't need this for the M-spec heatmap
     est = est.set_index('Parameters')
     fig = heatmap(input=est,
                   outputfile='VEMethod_Drivers1b_FEest_Li_Mspec_Heatmap' + str(R) + '.png',
                   brackettext=M,
-                  title='Yes') # switch on/off title
-    telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Li_Mspec_Heatmap' + str(R) + '.png',
-               cap='VEMethod_Drivers1b_FEest_Li_Mspec_Heatmap' + str(R) + '\n\n' + M)
+                  title='Yes')  # switch on/off title
     R += 1
-## 'Robustness' heatmap: average beta and highest beta parameter
+# 'Robustness' heatmap: average beta and highest beta parameter
 # Average beta (absolute)
 d = est_consol.copy()
 d['Point Estimate'] = np.abs(d['Point Estimate'])
@@ -200,16 +188,14 @@ mask = np.zeros_like(est_consol_robustness)
 fig = heatmap(input=est_consol_robustness,
               outputfile='VEMethod_Drivers1b_FEest_Li_Mspec_Robustness_Heatmap.png',
               title='No') # No title
-telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Li_Mspec_Robustness_Heatmap.png',
-           cap='VEMethod_Drivers1b_FEest_Li_Mspec_Robustness_Heatmap\n\n' + 'Rows = ' + str(n_row))
 
-### Interim --- Pause to not trigger flood control
-print('Interim --- Pause to not trigger flood control')
-time.sleep(30)
+# Interim --- Pause to not trigger flood control
+# print('Interim --- Pause to not trigger flood control')
+# time.sleep(30)
 
-### II.B --- 'Realistic' Values
+# II.B --- 'Realistic' Values
 print("II.B --- 'Realistic' Values")
-## Function and parameter values
+# Function and parameter values
 real_p_v = 0.5
 real_Theta_tau = 0.75
 real_Theta_v = 0.7
@@ -224,6 +210,7 @@ real_mew_ve = 0.5
 #              (df['ktau'] == 0.75) &
 #              (df['kalpha'] == 0.75))
 
+
 def realism(frame,
             p_v=real_p_v,
             Theta_tau=real_Theta_tau,
@@ -234,7 +221,7 @@ def realism(frame,
             mew_ve = real_mew_ve): # run this function before converting LaTeX into Greek
     frame.loc[frame['Parameters'] == 'p_v',
               ['Point Estimate', 'Lower Bound', 'Upper Bound']] = frame[['Point Estimate', 'Lower Bound',
-                                                                         'Upper Bound']] * (1-p_v) # p_v = 0.15
+                                                                         'Upper Bound']] * (1-p_v)  # p_v = 0.15
     frame.loc[frame['Parameters'] == 'Theta_v',
               ['Point Estimate', 'Lower Bound', 'Upper Bound']] = frame[['Point Estimate', 'Lower Bound',
                                                                          'Upper Bound']] * (1-Theta_v)  # Theta_v = 0.7
@@ -254,7 +241,9 @@ def realism(frame,
               ['Point Estimate', 'Lower Bound', 'Upper Bound']] = frame[['Point Estimate', 'Lower Bound',
                                                                         'Upper Bound']] * (1-mew_ve)  # mew_ve = 0.5
     return frame
-## M-specific (may need to run twice; switch on the delete line if so)
+
+
+# M-specific (may need to run twice; switch on the delete line if so)
 # del est_realistic_consol
 est_realistic_consol = pd.DataFrame(columns=['Design', 'Parameters', 'Point Estimate', 'Lower Bound', 'Upper Bound'])
 R = 1
@@ -262,27 +251,25 @@ for M in tqdm(list_M):
     d = df[df['Design'] == M]
     mod, result, est_realistic = OLS(formula=eqn_li_Mspec, data=d, dropM=False)
     est_realistic = est_realistic.round(3)
-    est_realistic = realism(frame=est_realistic) # rescale to realistic parameter values
+    est_realistic = realism(frame=est_realistic)  # rescale to realistic parameter values
     est_realistic['Parameters'] = est_realistic['Parameters'].replace(dict_param)
     est_realistic['Design'] = M
-    est_realistic_consol = pd.concat([est_realistic_consol, est_realistic], axis=0) # consolidate DFs before setting index in M-spec DF
-    del est_realistic['Design'] # don't need this for the M-spec heatmap
+    est_realistic_consol = pd.concat([est_realistic_consol, est_realistic], axis=0)  # consolidate DFs before setting index in M-spec DF
+    del est_realistic['Design']  # don't need this for the M-spec heatmap
     est_realistic = est_realistic.set_index('Parameters')
     fig = heatmap(input=est_realistic,
                   outputfile='VEMethod_Drivers1b_FEest_Realistic_Li_Mspec_Heatmap' + str(R) + '.png',
                   brackettext=M,
-                  title='Rescaled') # switch on/off title
-    telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Realistic_Li_Mspec_Heatmap' + str(R) + '.png',
-               cap='VEMethod_Drivers1b_FEest_Realistic_Li_Mspec_Heatmap' + str(R) + '\n\n' + M)
+                  title='Rescaled')  # switch on/off title
     R += 1
 
-### Interim --- Pause to not trigger flood control
-print('Interim --- Pause to not trigger flood control')
-time.sleep(30)
+# Interim --- Pause to not trigger flood control
+# print('Interim --- Pause to not trigger flood control')
+# time.sleep(30)
 
-### II.C --- 'Realistic' Values (Reduced Bias)
+# II.C --- 'Realistic' Values (Reduced Bias)
 print("II.C --- 'Realistic' Values (Reduced Bias)")
-## Function and parameter values
+# Function and parameter values
 real2_p_v = 0.5
 real2_Theta_tau = 0.75
 real2_Theta_v = 0.7
@@ -297,7 +284,7 @@ real2_mew_ve = 0.5
 #              (df['ktau'] == 0.75) &
 #              (df['kalpha'] == 0.75))'
 
-## M-specific (may need to run twice; switch on the delete line if so)
+# M-specific (may need to run twice; switch on the delete line if so)
 # del est_realistic2_consol
 est_realistic2_consol = pd.DataFrame(columns=['Design', 'Parameters', 'Point Estimate', 'Lower Bound', 'Upper Bound'])
 R = 1
@@ -312,19 +299,17 @@ for M in tqdm(list_M):
                              p_tau=real2_p_tau,
                              ktau=real2_ktau,
                              kalpha=real2_kalpha,
-                             mew_ve=real2_mew_ve) # rescale to realistic parameter values
+                             mew_ve=real2_mew_ve)  # rescale to realistic parameter values
     est_realistic2['Parameters'] = est_realistic2['Parameters'].replace(dict_param)
     est_realistic2['Design'] = M
-    est_realistic2_consol = pd.concat([est_realistic2_consol, est_realistic2], axis=0) # consolidate DFs before setting index in M-spec DF
-    del est_realistic2['Design'] # don't need this for the M-spec heatmap
+    est_realistic2_consol = pd.concat([est_realistic2_consol, est_realistic2], axis=0)  # consolidate DFs before setting index in M-spec DF
+    del est_realistic2['Design']  # don't need this for the M-spec heatmap
     est_realistic2 = est_realistic2.set_index('Parameters')
     fig = heatmap(input=est_realistic2,
                   outputfile='VEMethod_Drivers1b_FEest_Realistic2_Li_Mspec_Heatmap' + str(R) + '.png',
                   brackettext=M,
-                  title='Rescaled') # switch on/off title
-    telsendimg(path=path_method + 'VEMethod_Drivers1b_FEest_Realistic2_Li_Mspec_Heatmap' + str(R) + '.png',
-               cap='VEMethod_Drivers1b_FEest_Realistic2_Li_Mspec_Heatmap' + str(R) + '\n\n' + M)
+                  title='Rescaled')  # switch on/off title
     R += 1
 
-### End
+# End
 print('\n----- Ran in ' + "{:.0f}".format(time.time() - time_start) + ' seconds -----')

@@ -34,8 +34,8 @@
 \titlespacing\subsection{0pt}{0.21in}{0.01in}
 \titlespacing\subsubsection{0pt}{0.21in}{0in}
 
-\title{\textbf{How Important Are Study Designs?} \\ A Simulation Approach in Assessing Bias in VE Estimation with Time-Varying Vaccine Coverage, and Heterogeneous Testing and Baseline Attack Rates}
-\author{Jing Lian Suah${}^a$ \qquad Naor Bar-Zeev${}^b$ \qquad Masliyana Husin${}^a$ \\ Boon Hwa Tng${}^a$ \qquad Maria Deloria Knoll${}^b\dagger$ \qquad Sheamini Sivasampu${}^a\dagger$ \\ \small ${}^a$Institute for Clinical Research, National Institutes of Health, Malaysia \\ \small ${}^b$Bloomberg School of Public Health, John Hopkins University, United States \\ \small $\dagger$ Co-Senior Authors}
+\title{\textbf{How Important Are Study Designs?} \\ \large A Simulation-Based Assessment of VE Estimation Bias with Time-Varying Vaccine Coverage, and Heterogeneous Testing and Baseline Attack Rates}
+\author{Jing Lian Suah${}^{a\dagger}$ \qquad Naor Bar-Zeev${}^b$ \qquad Maria Deloria Knoll${}^b$ \\ \small ${}^a$ Research and Modelling Unit, Central Bank of Malaysia, Malaysia \\ \small ${}^b$ Bloomberg School of Public Health, Johns Hopkins University, United States \\ \footnotesize $\dagger$ \parbox{\linewidth}{\centering This research was conducted while on secondment at the Institute for Clinical Research, National Institutes of Health, Ministry of Health, Malaysia}}
 \date{\today}
 
 \begin{document}
@@ -59,7 +59,7 @@
 		\begin{itemize}
 			\item This paper simulated a theoretical model with frictions in vaccination, testing, baseline disease risks, and heterogeneous vaccine effectiveness to evaluate estimation bias across four cohort and two test-negative designs.
 			\item In theory, bias depends on behavioural asymmetries (in testing, and baseline risk) between the vax-willing and vax-unwilling, and the speed of vaccination rollout.
-			\item Even under `ideal' conditions (no frictions), there is intrinsic estimation bias across all study designs of different magnitudes.
+			\item There is intrinsic estimation bias across all study designs, with the direction and magnitude contingent on specific conditions.
 			\item In scenarios that may be reflective of past SARS-CoV-2 waves, the degree of bias can be substantial, attributable to variation in assumed testing and baseline risk frictions. 
 			\item A formal regression-based decomposition indicates that study designs have visibly different primary sources of estimation bias, and degree of robustness in general.
 			\item This study warrants a re-benchmarking of methodology and reporting checklists for VE research, and informs the design of cost-effective surveillance by quantifying part of the bias-implementation cost trade-off.
@@ -69,18 +69,18 @@
 
 \section{Introduction}
 
-When first-generation COVID-19 vaccines were rolled out via mass vaccination programmes in early 2021, the World Health Organisation (WHO) issued an interim guidance on evaluating vaccine effectiveness (VE), based primarily on past non-COVID-19 outbreaks, particularly influenza \citep{world2021evaluation}. Reflecting this, the WHO made an explicit preference for test-negative design (TND) or test-negative case-control (TNCC) in minimising confounding from selection in health-seeking behaviour, while acknowledging the merits of retrospective and prospective cohorts. Other methods, including the screening method, and regression discontinuity design (RDD), were also discussed \citep{orenstein1985field, world2021evaluation}. This recommendation, and their ubiquitous application in the COVID-19 VE literature, provides a basis for variations of cohorts and TNDs to be considered in this study.
+When first-generation COVID-19 vaccines were rolled out via mass vaccination programmes in early 2021, the World Health Organisation (WHO) issued an interim guidance on evaluating vaccine effectiveness (VE), based primarily on past non-COVID-19 outbreaks, particularly influenza \citep{world2021evaluation}. Reflecting this, the WHO made an explicit preference for test-negative (TND) or test-negative case-control (TNCC) designs in minimising confounding from selection in health-seeking behaviour, while acknowledging the merits of retrospective and prospective cohorts. Other methods, including the screening method, and regression discontinuity design (RDD), were also discussed \citep{orenstein1985field, world2021evaluation}. This recommendation, and the ubiquitous application of TNDs in the COVID-19 VE literature, provides a basis for variations of cohorts and TNDs to be considered in this study.
 
-The pre-COVID-19 literature discussed several issues pertinent to the estimation bias of VE. Firstly, under reasonable sets of sub-100\% sensitivities and specificities in testing, both cohorts, and case-controls and TNDs showed small biases in simulations \citep{orenstein2007methodologic}, but misclassification bias correction is possible in select applications \citep{patel2020postlicensure, endo2020bias}. This holds for COVID-19, given the regulations requiring high accuracy rates in professionally administered Reverse Transcriptase Polyamerase Chain Reaction (RT-PCR) and Rapid Antigen (RTK-Ag) tests. Secondly, TNDs are argued to be more robust to selection on health-seeking behaviour than cohorts \citep{jackson2013test}. Thirdly, TNDs are unbiased under a range of assumptions, but viral interference, asymmetric severity between the vaccinated and unvaccinated, and, for influenza specifically, imbalances in the rates of influenza-like illnesses (ILI) that are non-influenza between the vaccinated and unvaccinated result in non-trivial biases \citep{foppa2013case, jackson2013test, jackson2018impact}. These reasons are reflected in the wide use of both methods in the COVID-19 VE literature. Fourthly, study designs, when constructing counterfactuals, ought to consider different models of vaccine failure (e.g., `leaky' vaccines, waning effectiveness), confounders (e.g. imbalances in time-varying exposure risk, and disease predisposition of recipients), and outcome definitions (e.g., case classification criteria) \citep{crowcroft2018framework}. The COVID-19 VE literature correctly uses specific study designs to assess waning effectiveness relative to static effectiveness, and age-stratification and regression analysis to address confounders. Attention was also given to outcome definitions, such as differences between post-COVID-19-positive deaths and clinically audited deaths due to COVID-19, and between clinically confirmed SARS-CoV-2 infections and SARS-CoV-2 infections based solely on positive tests.
+The pre-COVID-19 literature discussed several issues pertinent to the estimation bias of VE. Firstly, under reasonable sets of sub-100\% sensitivities and specificities in testing, both cohorts, and case-controls and TNDs showed small biases under simulations \citep{orenstein2007methodologic}, but misclassification bias correction is possible in select applications \citep{patel2020postlicensure, endo2020bias}. This holds for COVID-19, given the regulations requiring high accuracy rates in professionally administered Reverse Transcriptase Polyamerase Chain Reaction (RT-PCR) and Rapid Antigen (RTK-Ag) tests. Secondly, TNDs are argued to be more robust to selection on health-seeking behaviour than cohorts \citep{jackson2013test}. Thirdly, TNDs are unbiased under a range of assumptions, but temporary non-specific immunity post-infection of similar non-target diseases, asymmetric severity between the vaccinated and unvaccinated, and, imbalances in the rates of non-target diseases in the same symptom cluster (e.g., influenza-like illnesses that are influenza and non-influenza when studying VE against influenza) between the vaccinated and unvaccinated result in non-trivial biases \citep{foppa2013case, jackson2013test, jackson2018impact}. These reasons are reflected in the wide use of both methods in the COVID-19 VE literature. Fourthly, study designs, when constructing counterfactuals, ought to consider different models of vaccine failure (e.g., `leaky' vaccines, waning effectiveness), confounders (e.g. imbalances in time-varying exposure risk, and disease predisposition of recipients), and outcome definitions (e.g., case classification criteria) \citep{crowcroft2018framework}. The COVID-19 VE literature correctly uses specific study designs to assess waning effectiveness relative to static effectiveness, and age-stratification and regression analysis to address confounders. Attention was also given to outcome definitions, such as differences between post-COVID-19-positive deaths and clinically audited deaths due to COVID-19, and between clinically confirmed SARS-CoV-2 infections and SARS-CoV-2 infections based solely on positive tests.
 
-However, the rollout of vaccines during the COVID-19 pandemic in 2021-22 was different in several aspects. Firstly, pre-COVID-19 vaccine take-up tend to be stable, but not during the COVID-19 pandemic \citep{ritchie2020coronavirus}. A COVID-19-era simulation noted the importance of temporal effects arising from differential risks at equivalent post-vaccination time points \citep{lewnard2021theoretical}. However, even with constant background risk, those vaccinated earlier have more draws of disease exposure post-vaccination than late-takers. Secondly, high but stagnant vaccine coverage in `first-movers' indicate selection between the vaccinated and unvaccinated population, such as on health-seeking behaviour, testing propensity, exposure risks \citep{ritchie2020coronavirus}. Thirdly, testing regimes varied widely across countries, ranging from comprehensive to selective \citep{ritchie2020coronavirus}. These were previously less important for influenza and broadly pre-COVID-19 VE studies, but may present new sources of bias for COVID-19 VE studies in the midst of vaccine rollouts.
+Notwithstanding the aforementioned concerns, the rollout of vaccines during the COVID-19 pandemic in 2021-22 deviated in substantial respects from pre-pandemic vaccination distribution. Firstly, pre-COVID-19 vaccine take-up tend to be stable, but not during the COVID-19 pandemic \citep{ritchie2020coronavirus}. A COVID-19-era simulation noted the importance of temporal effects arising from differential risks at equivalent post-vaccination time points \citep{lewnard2021theoretical}. However, even with constant background risk, those vaccinated earlier have more opportunities of disease exposure post-vaccination than those vaccinated later. Secondly, high but stagnant coverage in countries that rolled out vaccines earlier indicate selection between the vaccinated and unvaccinated population, such as on health-seeking behaviour, testing propensity, or exposure risks \citep{ritchie2020coronavirus}. Thirdly, testing regimens varied widely across countries, ranging from selective to comprehensive \citep{ritchie2020coronavirus}. These were previously less important for influenza and broadly pre-COVID-19 VE studies, but may present new sources of bias for COVID-19 VE studies in the midst of vaccine rollouts.
 
 This study then asks ``how do commonly used VE study designs (specifically variations of cohorts, and TNDs) perform in the presence of (i) time-varying vaccine coverage, (ii) latent selection of and risk behaviours on willingness to vaccinate and (iii) `leaky' vaccines (such that $VE < 100\%$ against infection)?'' We attempt to answer this in three steps. Firstly, a theoretical discussion of bias. Secondly, a simulation of the theorised environment, and estimates under variations of cohorts and TNDs. Thirdly, an analysis of the drivers of VE estimation bias in absolute, directional, and relative terms.
 
 \section{Methods}
 \subsection{Conceptual Framework and Simulation}
 
-Data is simulated based on a conceptual framework with 10 adjustable parameters. There are four behavioural blocks, whose structure is detailed in Appendix A --- (1) vaccination take-up, (2) testing behaviour, (3) distribution of vaccine effectiveness, and (4) disease outcomes. The following parameters choices $\Xi$ were used. They were chosen to balance between range for generalisability, and sparsity for computational ease. Excluding combinations that violate the axioms of probability, e.g., $p_\tau \cdot k_\tau > 1$, this corresponds to $888125$ unique combinations. `Ideal' conditions are such that vaccine coverage is static, and that behavioural frictions in testing and baseline risk do not exist ($p_v=1$, $\Theta_{\tau}=1$, $p_{\tau}=1$, $k_{\tau}=1$, $k_{\alpha}=1$). The simulation took 415516 seconds (115.42 hours) on a AWS EC2 c6i.32xLarge Amazon Linux instance with 128 virtual central processing units, one of the most powerful public-accessible compute-optimised virtual machines when the analysis was conducted.
+Data are simulated based on a conceptual framework with 10 adjustable parameters. There are four behavioural blocks, whose structure is detailed in Appendix A --- (1) vaccination take-up, (2) testing behaviour, (3) distribution of vaccine effectiveness, and (4) disease outcomes. The following parameters choices $\Xi$ were used. They were chosen to balance between range for generalisability, and sparsity for computational ease. Excluding combinations that violate the axioms of probability, e.g., $p_\tau \cdot k_\tau > 1$, this corresponds to $888125$ unique combinations. `Ideal' conditions are such that vaccine coverage is static, and that behavioural frictions in testing and baseline risk do not exist ($p_v=1$, $\Theta_{\tau}=1$, $p_{\tau}=1$, $k_{\tau}=1$, $k_{\alpha}=1$).
 \begin{table}[H]
 	\begin{center}
 		\caption{Parameters in the Simulation}
@@ -90,7 +90,7 @@ Data is simulated based on a conceptual framework with 10 adjustable parameters.
 			\hline \hline 
 			$N$ & Simulated population size & 1000 \\
 			\hline 
-			$T$ & Number of time periods used in the simulation; this is equivalent to the follow-up duration & 20, 30, 40, 50, 60 \\
+			$T$ & Number of chronological days used in the simulation; this is equivalent to the follow-up duration & 20, 30, 40, 50, 60 \\
 			\hline 
 			$\Theta_{v}$ & Fraction of population that is willing to be vaccinated (vax-willing); fraction $\Theta_{v}$ takes values $\theta_{v} = 1$ and fraction $1 - \Theta_{v}$ takes values $\theta_{v} = 0$ & 0.3, 0.4, 0.5, 0.6, 0.7 \\
 			\hline 
@@ -120,7 +120,7 @@ Hence, there are four groups.
 	\item Willing to be vaccinated and tested ($\theta_{v} = 1$ and $\theta_{\tau} = 1$)
 \end{enumerate}
 
-In this framework, theoretical bias is as follows. $w_t$ refers to the daily weights implicit to the choices of study designs, which has no closed form. The full derivation, including for the special cases of static vaccine coverage ($T=1$), is in Appendix B.
+In this framework, theoretical bias is as follows (equations 1 to 8). $w_t$ refers to the daily weights implicit to the choices of study designs, which has no closed form. The full derivation, including for the special cases of static vaccine coverage ($T=1$), is in Appendix B.
 
 \begin{eqnarray}
 	{Bias}\{\widehat{VE}\} = \widehat{VE} - VE = \sum_{t=0}^{T} w_{t} \bigg( \frac{\Theta_{v} ( 1 - \Theta_{v} ) \phi_v \phi_{uv}' ( \Omega' - \Omega ) }{\big( \Theta_{v} \phi_{uv} + (1 - \Theta_{v}) \phi_{uv}'  \big) \big( \Theta_{v} \phi_{uv} \Omega + ( 1 - \Theta_{v}) \phi_{uv}' \Omega' \big)} \bigg) \\ 
@@ -133,7 +133,7 @@ In this framework, theoretical bias is as follows. $w_t$ refers to the daily wei
 	\textbf{and} \ \Omega' = j(k_\tau p_\tau) = \sum_{m}^{t} k_{\tau} p_{\tau} \sum_{n}^{t-1} (1- k_{\tau} p_{\tau})^{n} k_{\tau} p_{\tau} \sum_{q}^{t-1} (1- k_{\tau} p_{\tau}) k_{\tau} p_{\tau}^{q} \sum_{r}^{t-1} (1- k_{\tau} p_{\tau})^{t-1-r} (k_{\tau} p_{\tau})^{r}	
 \end{eqnarray}
 
-All else held equal, theoretical bias is decreasing in $p_v$, and increases as $k_{\tau}$ and $k_{\alpha}$ diverge from $1$. In general, theoretical bias primarily depends the behavioural asymmetries between those who are vax-willing and vax-unwilling, as well as the speed of vaccination rollout. While the incidence of vax-willing individuals feed into the expression, that of test-willing individuals does not, and only testing behaviour does. An unbiased study design, given parameter set $\Xi$, optimises for $w_t$, such that the theoretical bias is exactly zero.
+All else held equal, theoretical bias is decreasing in $p_v$ (upward bias), and increases as $k_{\tau}$ (downward bias) and $k_{\alpha}$ (upward bias) diverge from $1$, with the directional inferred from the signs in equation 1. In general, theoretical bias primarily depends the behavioural asymmetries between those who are vax-willing and vax-unwilling, as well as the speed of vaccination rollout. While the incidence of vax-willing individuals feed into the expression, that of test-willing individuals does not, and only testing behaviour does. An unbiased study design, given parameter set $\Xi$, optimises for $w_t$, such that the theoretical bias is exactly zero.
 
 \begin{eqnarray}
 	w_t | \Xi \equiv \{ \sum_{t=0}^{T} w_{t} \hat{VE}_{t} = \mathbb{E}(VE) \}
@@ -190,27 +190,27 @@ To provide a glimpse of how VE estimates may be biased in practice, we will show
 \begin{table}[H]
 	\begin{center}
 		\caption{Scenario-Specific Parameter Assumptions}
-		\begin{tabular}{||p{0.58\linewidth}||p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}||}
+		\begin{tabular}{||p{0.5\linewidth}||p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}|p{0.05\linewidth}||}
 			\hline \hline
-			& $p_v$ & $\Theta_{\tau}$ & $p_\tau$ & $k_\tau$ & $k_\alpha$ & $\mu_{VE}$ \\
+			& $\Theta_{v}$ & $p_v$ & $\Theta_{\tau}$ & $p_\tau$ & $k_\tau$ & $k_\alpha$ & $\mu_{VE}$ \\
 			\hline \hline
-			\textbf{Scenario A} (Slow rollout, comprehensive testing and tracing, vax-unwilling-biased baseline risks) & 0.15 & 1 & 1 & 1 & 1.25 & 0.9 \\
+			\textbf{Scenario A} (Slow rollout, comprehensive testing and tracing, vax-unwilling-biased baseline risks) & 0.3 & 0.15 & 1 & 1 & 1 & 1.25 & 0.9 \\
 			\hline
-			\textbf{Scenario B} (Slow rollout, partly comprehensive testing and tracing, vax-unwilling-biased baseline risks) & 0.15 & 0.75 & 1 & 1 & 1.25 & 0.9 \\
+			\textbf{Scenario B} (Slow rollout, partly comprehensive testing and tracing, vax-unwilling-biased baseline risks) & 0.3 & 0.15 & 0.75 & 1 & 1 & 1.25 & 0.9 \\
 			\hline
-			\textbf{Scenario C} (Gradual rollout, selective testing and tracing, symmetric baseline risks) & 0.3 & 0.75 & 0.75 & 1 & 1 & 0.7 \\
+			\textbf{Scenario C} (Gradual rollout, selective testing and tracing, symmetric baseline risks) & 0.5 & 0.3 & 0.75 & 0.75 & 1 & 1 & 0.7 \\
 			\hline
-			\textbf{Scenario D} (Fast rollout, highly selective testing and tracing, vax-willing-biased baseline risks) & 0.5 & 0.75 & 0.5 & 0.75 & 0.75 & 0.5\\
+			\textbf{Scenario D} (Fast rollout, highly selective testing and tracing, vax-willing-biased baseline risks) & 0.7 & 0.5 & 0.75 & 0.5 & 0.75 & 0.75 & 0.5\\
 			\hline
-			\textbf{Scenario E} (Rapid rollout, minimal testing and tracing, vax-willing-biased baseline risks) & 0.85 & 0.5 & 0.5 & 0.75 & 0.75 & 0.5 \\
+			\textbf{Scenario E} (Rapid rollout, minimal testing and tracing, vax-willing-biased baseline risks) & 0.7 & 0.85 & 0.5 & 0.5 & 0.75 & 0.75 & 0.5 \\
 			\hline
-			\textbf{Scenario A \& B (Severe Outcomes)} & 0.15 & 1 & 1 & 1 & 1 & 0.9 \\
+			\textbf{Scenario A \& B (Severe Outcomes)} & 0.3 & 0.15 & 1 & 1 & 1 & 1 & 0.9 \\
 			\hline
-			\textbf{Scenario C (Severe Outcomes)} & 0.3 & 1 & 1 & 1 & 1 & 0.9 \\
+			\textbf{Scenario C (Severe Outcomes)} & 0.5 & 0.3 & 1 & 1 & 1 & 1 & 0.9 \\
 			\hline
-			\textbf{Scenario D (Severe Outcomes)} & 0.5 & 1 & 1 & 1 & 1 & 0.9 \\
+			\textbf{Scenario D (Severe Outcomes)} & 0.7 & 0.5 & 1 & 1 & 1 & 1 & 0.9 \\
 			\hline
-			\textbf{Scenario E (Severe Outcomes)}  & 0.85 & 1 & 1 & 1 & 1 & 0.9 \\
+			\textbf{Scenario E (Severe Outcomes)} & 0.7 & 0.85 & 1 & 1 & 1 & 1 & 0.9 \\
 			\hline \hline
 		\end{tabular}
 	\end{center}
@@ -231,7 +231,9 @@ To ease interpretation, variable parameters are transformed as follows. To limit
 \end{itemize}
 
 \section{Findings}
-In all heat maps indicating estimation biases, unless indicated otherwise, the range of colours are constrained to $[-20, 20]$. Biases beyond this may be considered too `extreme'. A 20 percentage point (ppt) over-estimation puts this the estimated COVID-19 vaccine effectiveness against death from a meta-analysis of 8 vaccine platforms spanning 5 variants of concern \citep{higdon2022sysreview} from the neighbourhood of 60\% - 99\% to 40\% - 79\%. The equivalent for severe disease goes from 55\% - 99\% to 35\% - 79\%, and that of SARS-CoV-2 infection to well below 50\%. This hypothetical 20 ppt over-estimation represents a substantial gap in estimated, and `true' protection offered. A contour map of number needed to vaccinate (NNV) and VE, given any input of the baseline attack rate $\alpha_0$, is also available for inspection in the supplementary appendix. For sufficiently low baseline attack rates ($<1\%$), as is likely case for severe COVID-19, a 20 ppt change can represent sizeable changes in NNV even when the estimated VE is high (e.g., a change in VE from 90\% to 70\% when the baseline attack rate is 1\% raises the NNV from ~100 to ~150, a 50\% increase in NNV). Moreover, the colour scheme differentiating over- (red) and under-estimation (blue) reflects that over-estimation ($Bias(\widehat{VE}) > 0$) may be more damaging policy-wise, as policymakers may be more confident than necessary when enacting (or unwinding) public health measures.
+The simulation took 415516 seconds (115.42 hours) in Python 3.10 on a AWS EC2 c6i.32xLarge Amazon Linux instance with 128 virtual central processing units, one of the most powerful public-accessible compute-optimised virtual machines when the analysis was conducted.
+
+In all heat maps indicating estimation biases, unless indicated otherwise, the range of colours are constrained to $[-20, 20]$. Biases beyond this may be considered too `extreme'. A 20 percentage point (ppt) over-estimation puts this the estimated COVID-19 vaccine effectiveness against death from a meta-analysis of 8 vaccine platforms spanning 5 variants of concern \citep{higdon2022sysreview} from the neighbourhood of 60\% - 99\% to 40\% - 79\%. The equivalent for severe disease goes from 55\% - 99\% to 35\% - 79\%, and that of SARS-CoV-2 infection to well below 50\%. This hypothetical 20 ppt over-estimation represents a substantial gap in estimated, and `true' protection offered. A contour map of number needed to vaccinate (NNV) and VE, given any input of the baseline attack rate $\alpha_0$, is also available for inspection in the supplementary appendix. For sufficiently low baseline attack rates ($<1\%$), as is likely the case for severe COVID-19, a 20 ppt change can represent sizeable changes in NNV even when the estimated VE is high (e.g., a change in VE from 90\% to 70\% when the baseline attack rate is 1\% raises the NNV from ~100 to ~150, a 50\% increase in NNV). Moreover, the colour scheme differentiating over- (red) and under-estimation (blue) reflects that over-estimation ($Bias(\widehat{VE}) > 0$) may be more damaging policy-wise, as policymakers may be more confident than necessary when enacting (or unwinding) public health measures.
 
 \subsection{Simulation}
 
@@ -371,7 +373,7 @@ Our study simulated data from a multi-parameter conceptual model of the epidemio
 
 Our work has three implications on the VE literature. 
 
-Firstly, our finding warrants a re-benchmarking of methodology. Recommendations for VE research, such as by the WHO \citep{world2021evaluation}, need to reflect these considerations, as outbreaks such as COVID-19 are materially different from earlier ones that most study designs were evaluated with. Our analysis of the drivers of estimation bias confirm that (1) the parameter-bias nexus differs across study designs, and (2) some designs, such as the TND with single test contribution, and binary outcomes cohort are less sensitive to variable vaccine coverage, and heterogeneous testing preferences and baseline attack rates. In practice, researchers can use the heat maps of design-specific bias-parameter sensitivities to `adjust' VE estimates, by first ascertaining the study design used, and second calibrate parameters in conceptual model to reflect the research setting, e.g., a study during the second Omicron wave should have large deviations from `ideal' values in the testing parameters, but small deviations in vaccination rate. The cumulative bias in the rescaled heat map can then be used to expand the confidence intervals of the VE estimates. Alternatively, researchers may adjust the point estimate and the confidence interval concurrently in either an upward or downward direction, depending on the cumulative bias of the parameter values used. For readers of empirical research, VE estimates may be adjusted ex post to assess confidence, or where the `correct' VE may lie. For instance, papers assessing VE during the Omicron wave may require substantial upward adjustments, or wider confidence bands, than those conducted during the Delta wave, which may require minimal adjustments. Hence, to help form judgment on the extent of estimation bias, future research ought to layout the sources of bias discussed. We recommend future research to report the following, in addition to the STrengthening the Reporting of OBservational studies in Epidemiology (STROBE) checklist.
+Firstly, our finding warrants a re-benchmarking of methodology. Recommendations for VE research, such as by the WHO \citep{world2021evaluation}, need to reflect these considerations, as outbreaks such as COVID-19 are materially different from earlier ones during which most study designs were evaluated. Our analysis of the drivers of estimation bias confirm that (1) the parameter-bias nexus differs across study designs, and (2) some designs, such as the TND with single test contribution, and binary outcomes cohort are less sensitive to variable vaccine coverage, and heterogeneous testing preferences and baseline attack rates. In practice, researchers can use the heat maps of design-specific bias-parameter sensitivities to `adjust' VE estimates, by first ascertaining the study design used, and second calibrate parameters in conceptual model to reflect the research setting, e.g., a study during the second Omicron wave should have large deviations from `ideal' values in the testing parameters, but small deviations in vaccination rate. The cumulative bias in the rescaled heat map can then be used to expand the confidence intervals of the VE estimates. Alternatively, researchers may adjust the point estimate and the confidence interval concurrently in either an upward or downward direction, depending on the cumulative bias of the parameter values used. For readers of empirical research, VE estimates may be adjusted ex post to assess confidence, or where the `correct' VE may lie. For instance, papers assessing VE during the Omicron wave may require substantial upward adjustments, or wider confidence bands, than those conducted during the Delta wave, which may require minimal adjustments. Hence, to help form judgment on the extent of estimation bias, future research ought to layout the sources of bias discussed. We recommend future research to report the following, in addition to the STrengthening the Reporting of OBservational studies in Epidemiology (STROBE) checklist.
 
 \begin{table}[H]
 	\begin{center}
@@ -408,15 +410,38 @@ Secondly, this study informs policymakers on designing cost-effective vaccine-pr
 
 Thirdly, A key nuance of vaccine-preventable infectious diseases --- disease progression, or severity of symptoms, that is correlated with testing propensity --- can be discussed within the model. In principle, this entails another layer of outcome post-infection with a unique relationship with vaccination status and testing preferences, compared to infection, and requires an unnecessarily complex theoretical model with minimal gains in insights. However, within the current model, this nuance is best captured by the testing rate ($p_\tau$) and testing asymmetry ($k_\tau$) parameters. Combinations of low testing rate amongst the test-willing ($p_\tau \ll 1$), and lower testing propensity amongst the vax-willing than the vax-unwilling ($k_\tau \gg 1$) represent instances where symptoms tend to be milder amongst the vaccinated, who in turn are less likely to test unless met with sufficiently severe symptoms.
 
-However, there are limitations in this study. Firstly, the possibility of tests with sub-100\% sensitivity and specificity is not modelled. However, this aspect has been discussed in a pre-COVID-19 simulation, which found that reasonable sensitivity and specificity figures (in the region of 80\% to 90\%) resulted in minimal bias for both cohorts and TNDs \citep{jackson2015effects}. Secondly, reinfections are not explicitly modelled. Suppose past infections provide some protective effect that compound with that of vaccines, then a greater prevalence of undetected infections amongst the vaccinated than the unvaccinated may overestimate VE. An extreme example is if episodes of breakthrough infections are extremely mild but can be close to each other, such that viral loads are also sufficiently low to not trigger most antigen tests, then it is possible that estimated VE is high when in fact should be low. This warrants more involved modelling in future research. Thirdly, observed confounding relationships are not modelled explicitly. Nonetheless, doing so requires strong and non-generalisable assumptions on the structure between potential confounders, vaccination choice, and disease.
+However, there are limitations in this study. Firstly, the possibility of tests with sub-100\% sensitivity and specificity is not modelled. However, this aspect has been discussed in a pre-COVID-19 simulation, which found that reasonable sensitivity and specificity figures (in the region of 80\% to 90\%) resulted in minimal bias for both cohorts and TNDs \citep{jackson2015effects}. Secondly, reinfections are not explicitly modelled. Suppose past infections provide some protective effect that compound with that of vaccines, then a greater prevalence of undetected infections amongst the vaccinated than the unvaccinated may overestimate VE. An example is if episodes of breakthrough infections are extremely mild but can be close to each other, such that viral loads are also sufficiently low to not trigger most antigen tests, then it is possible that estimated VE is high when in fact should be low. This warrants more involved modelling in future research. Thirdly, observed confounding relationships are not modelled explicitly. Nonetheless, doing so requires strong and non-generalisable assumptions on the structure between potential confounders, vaccination choice, and disease. Fourthly, dynamics of waning VE (or building up of VE) are also not modelled explicitly, which could exponentiate the complexity of the simulation. Further research in this line may consider various forms of non-linearity in waning, interaction with behavioural frictions in the population, and probabilistic waning. 
 
 \section{Conclusion}
 
 Using simulated data from a multi-parameter conceptual model of the epidemiological environment, we offer three findings. Firstly, both dynamic vaccine coverage, and heterogeneity in testing behaviour and baseline attack rates that is selected on willingness to vaccinate, are important determinants of VE estimation bias. Secondly, study design choices have non-trivial effects on the estimation bias of VE even if these behavioural frictions are absent.  Thirdly, these factors have different relative and absolute importance in driving estimation bias, both study design-specific and in overall terms. Moving forward, a re-benchmarking of methodology, especially for studying COVID-19 vaccine effectiveness, and community surveillance systems of vaccine-preventable disease that minimise these sources of bias, are warranted. This paper also provides the basis for ex post adjustment of VE estimates contingent on study design and research context.
 
 \newpage
+
+\textbf{Ethical consideration}
+
+As this research uses only simulated data, and does not involve any human participants, no institutional review board (IRB) approval is required.
+
+\textbf{Declaration of interests}
+
+JLS received support for attending academic meetings from AstraZeneca for work outside this paper. NB-Z received research grants from Merck, personal fees from Merck, and a research grant from Johnson \& Johnson, all for unrelated work outside the scope of this paper. MDK received reports grants from Merck, personal fees from Merck, and grants from Pfizer, outside the submitted work.
+
+\textbf{Data and replication statement} 
+
+This research uses only simulated data, and does not involve any human participants. All scripts required for replication are available at \href{https://github.com/suahjl/vemethod-simulation-frictions}{\textbf{github.com/suahjl/vemethod-simulation-frictions}}.
+
+\textbf{Acknowledgement}
+
+The authors would like to thank the following individuals: 
+\begin{itemize}
+	\item Sheamini Sivasampu (Institute for Clinical Research, National Institutes of Health, Ministry of Health, Malaysia) for contributions in conceiving broad research questions;
+	\item Masliyana Husin (Institute for Clinical Research, National Institutes of Health, Ministry of Health, Malaysia) for material support in securing access to AWS EC2, and administrative support; and
+	\item Boon Hwa Tng (Research and Modelling Unit, Central Bank of Malaysia, Malaysia; contributed while on secondment at the Institute for Clinical Research, National Institutes of Health, Ministry of Health, Malaysia) for comments and suggestions related to the theoretical model, and post-simulation analysis of estimation bias.
+\end{itemize}
+
+\newpage
 \bibliographystyle{agsm}
-\bibliography{2022-06_VEMethod_Article_Bibliography}
+\bibliography{2022-08_VEMethod_Article_Bibliography}
 
 \newpage
 \appendix
@@ -502,7 +527,7 @@ Hence, there are three permutations of infection risks, depending on vax-willing
 	Pr(y_{i,t}=1 | y_{i,t-1}=0, \theta_{v, i} = 0,v_{i,t} = 1) = \alpha_{vw', v} = k_\alpha \alpha_{v} = 0 
 \end{eqnarray}
 
-To observe infection $\hat{y}$ at period $t$, individual $i$ needs to be tested at the period of infection $\tau_{i,t} = 1$. We can generalise to a longer detection period, but this is unnecessary convolution for the aims of the study. Quality of tests, i.e., sets of sensitivity and specificity, is omitted, as it has been previously discussed \citep{jackson2015effects}.
+To observe infection $\hat{y}$ at period $t$, individual $i$ needs to be tested at the period of infection $\tau_{i,t} = 1$. We can generalise to a longer detection period, but this is unnecessary convolution for the aims of the study. Tests are assumed to be perfectly sensitive and specific in this framework.
 
 Hence, if an individual $i$ is infected at period $t$ but does not take a test, the observed state will not indicate infection $\hat{y}_{i,t}=0$. If an individual is indeed not infected at period $t$, taking a test will indicate a lack of infection $\hat{y}_{i,t}=0$. In contrast, taking a test at period $t$ when infected at period $t$ will observe an infection $\hat{y}_{i,t}=1$.
 
