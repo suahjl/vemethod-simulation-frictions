@@ -1,5 +1,5 @@
 # vemethod-simulation-frictions
-This repository contains files required to replicate the study "How Important Are Study Designs? A Simulation-Based Assessment of VE Estimation Bias with Time-Varying Vaccine Coverage, and Heterogeneous Testing and Baseline Attack Rates" by Jing Lian Suah, Naor Bar-Zeev and Maria Deloria Knoll.
+This repository contains files required to replicate the study "A Simulation Assessment of Vaccine Effectiveness Estimation Bias with Time-Varying Vaccine Coverage, and Heterogeneous Testing and Baseline Attack Rates" by Jing Lian Suah, Naor Bar-Zeev and Maria Deloria Knoll.
 
 Link to the preprint can be found [here](test).
 
