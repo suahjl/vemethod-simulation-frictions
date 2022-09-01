@@ -1,7 +1,7 @@
 # vemethod-simulation-frictions
 This repository contains files required to replicate the study "A Simulation Assessment of Vaccine Effectiveness Estimation Bias with Time-Varying Vaccine Coverage, and Heterogeneous Testing and Baseline Attack Rates" by Jing Lian Suah, Naor Bar-Zeev and Maria Deloria Knoll.
 
-Link to the preprint can be found [here](test).
+Link to the preprint can be found [here](https://doi.org/10.1101/2022.08.25.22279235).
 
 This repository contains the following.
 1. Python scripts required to replicate the study. These are in the main directory.
